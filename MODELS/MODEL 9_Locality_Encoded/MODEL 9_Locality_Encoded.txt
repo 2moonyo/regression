@@ -1,0 +1,41 @@
+MODEL 9: IQR_1.5_Locality_Encoded
+
+#BEST PARAMETERS LINEAR 95th Percentile
+best_params = {
+    "random_strength": 5,
+    "learning_rate": 0.07444444444444444,
+    "l2_leaf_reg": 7,
+    "iterations": 1500,
+    "depth": 6,
+    "eval_metric": "RMSE",
+    "verbose": 100,  # Adjust verbosity to see training progress
+    "random_seed": 42,
+    "cat_features": categorical_feature_indices
+}
+
+# Initialize the CatBoost model
+model = CatBoostRegressor(**best_params)
+
+# Train the model
+model.fit(X_train, y_train, eval_set=(X_test, y_test), early_stopping_rounds=50)
+
+categorical_feature_indices = ["energy_certificate","region"]
+
+Variables
+['bedrooms', 'facades', 'buildingState', 'gardenSurface', 'pool',
+       'livingArea', 'surfaceOfThePlot', 'energy_certificate', 'region',
+       'locality_encoded'],
+
+Test Set Performance(A):
+Root Mean Squared Error (RMSE): 89,497.87
+Mean Squared Error (MSE): 8,009,868,897.48
+Mean Absolute Error (MAE): 64,081.01
+R² Score: 0.7365
+Mean Percentage Squared Error (MPSE): 0.067903
+
+
+Test Performance (B):
+Test RMSE: 89497.87091030243, Test R2: 0.7365124639605654, Test MSE: 8009868897.477159, TEST MAE: 64081.01030146444, Test MSLE: 0.054755260451353246
+Training MAE: 52767.43903815832, Test RMSE: 64081.01030146444
+Training RMSE: 72463.80282189981, Test RMSE: 89497.87091030243
+Training R²: 0.8263927077365228, Test R²: 0.7365124639605654
