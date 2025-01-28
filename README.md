@@ -1,77 +1,98 @@
-# regression
-Immo Regression
-Project Structure
+# Regression Project Documentation
 
-The project is divided into four main classes:
+## Project Overview
+This project focuses on real estate price prediction using machine learning techniques. The pipeline is structured into four key stages:
 
-Preprocessing: Cleans and merges income, zipcode, and property datasets.
-    # Data in utils
-    property_data CSV = "properties_data_cleaned_05_12_14H30"
-    income_data CSV = "INCOME DATA 2022"
-    zipcode_data from Bpost = "zipcodes_num_nl_new_Tumi"
+### 1. Preprocessing
+- Cleans and merges datasets related to properties, income, and postal codes.
+- Utilizes external data sources:
+  - **Property Data**: `properties_data_cleaned_05_12_14H30`
+  - **Income Data**: `INCOME DATA 2022` (sourced from [Statbel](https://statbel.fgov.be/en/news/attert-richest-municipality-and-saint-josse-ten-noode-poorest-2022))
+  - **Zip Code Data**: `zipcodes_num_nl_new_Tumi` (sourced from [BPpost](https://www.bpost.be/fr/outil-de-validation-de-codes-postaux))
+- Uses **rapidfuzz** for approximate string matching between French and Dutch names, achieving 75% accuracy.
 
-FeatureEngineering: Adds derived features like region and removes outliers.
+### 2. Feature Engineering
+- Cleans dataset by removing outliers and handling missing values.
+- Creates a **regional categorization** for properties in **Brussels**, **Wallonia**, and **Flanders**.
+- Drops features with low correlation to price, including:
+  - `kitchen`, `postal_code`, `furnished`, `fireplace`, `province`, `property_type`, `Terrace Surface`
+- Scales the median income data to align with property prices.
+- Removes extreme outliers based on **1.5× Interquartile Range (IQR)** while retaining some variation.
 
-ModelApply: Handles model training and cross-validation using CatBoost.
+### 3. Model Training and Application
+- Uses **CatBoost** for model training with cross-validation.
+- Performs **random search** for hyperparameter tuning.
+- Incorporates categorical features: `locality`, `energy_certificate`, `region`.
 
-ModelEvaluation: Computes metrics, visualizes results, and performs SHAP analysis.
+### 4. Model Evaluation & Interpretation
+- Evaluates performance using multiple metrics:
+  - **MAE (Mean Absolute Error)**
+  - **RMSE (Root Mean Squared Error)**
+  - **R² Score (Coefficient of Determination)**
+  - **MAPE (Mean Absolute Percentage Error)**
+  - **sMAPE (Symmetric Mean Absolute Percentage Error)**
+- Visualizes results and performs **SHAP (SHapley Additive exPlanations)** analysis for feature importance.
 
-Prerequisites
+---
 
-Python 3.7+
+## Model Performance
 
-Libraries:
+### Best Model Metrics
+- **Total code runtime**: 179.493 seconds
+- **Model training time**: 25.66 seconds
 
-pandas
+| Metric       | Train  | Test  |
+|-------------|--------|-------|
+| **MAE**     | 53,046.11  | 62,511.11  |
+| **RMSE**    | 72,935.64  | 86,764.82  |
+| **R² Score**| 0.8018  | 0.7318  |
+| **MAPE**    | 16.10%  | 18.79%  |
+| **sMAPE**   | 15.23%  | 17.67%  |
 
-numpy
+### Worst Model Metrics
+| Metric       | Train  | Test  |
+|-------------|--------|-------|
+| **MAE**     | 38,377.06  | 45,291.87  |
+| **RMSE**    | 47,976.58  | 56,634.58  |
+| **R² Score**| 0.5481  | 0.4130  |
+| **MAPE**    | 11.08%  | 12.88%  |
+| **sMAPE**   | 10.91%  | 12.69%  |
 
-sklearn
+---
 
-seaborn
+## Insights from Model Evaluation
 
-matplotlib
+### 1. Median Income Impact
+- Median income per municipality had **limited correlation** with property prices.
+- The metric was relevant for middle-income housing but less so for **luxury or low-cost properties**.
 
-CatBoost
+### 2. Energy Certification Impact
+- The energy certification **significantly influenced prices in Flanders**, where regulatory compliance is strict.
+- This effect was weaker in **Brussels and Wallonia**, possibly due to different taxation policies.
 
-shap
+---
 
-rapidfuzz
+## Prerequisites & Dependencies
 
-scipy
+### Software Requirements
+- Python 3.7+
 
-Please refer to 'requirements.txt' to import all associated dependancies
-    "VenV_immo" is included in the utils
+### Libraries Used
+- `pandas`
+- `numpy`
+- `sklearn`
+- `seaborn`
+- `matplotlib`
+- `CatBoost`
+- `shap`
+- `rapidfuzz`
+- `scipy`
 
-Model Analysis
+*Refer to* `requirements.txt` *for a complete list of dependencies.*
 
-My Best model metrics are in the 'eval_metrics.md' write up with a 
-total code running time: 179.493 seconds
-Model training time: 25.66 seconds.
-# Noted in evaluation_metrics folder
+---
 
-MAE_train = 53046.11454390735
-MAE_test = 62511.11393412253
-RMSE_train = 72935.63958945835
-RMSE_test = 86764.82096128115
-R2_train = 0.8018401136632958
-R2_test = 0.7318702663432397
-MAPE_train = 16.10101937010805
-MAPE_test = 18.794841133668257
-sMAPE_train = 15.228928430096653
-sMAPE_test = 17.66769666366581
-								
-
-My worst metrics
-# Noted in the worst evaulation metrics
-
-MAE_train = 38377.05823428117
-MAE_test = 45291.87155948026
-RMSE_train = 47976.581473187165
-RMSE_test = 56634.576269188365
-R2_train = 0.5480939828309246
-R2_test = 0.4130440897552218
-MAPE_train = 11.084191483776573
-MAPE_test = 12.882497602247009
-sMAPE_train = 10.908931576969566
-sMAPE_test = 12.6929203922517
+## Next Steps
+- **Refine feature selection** based on further SHAP analysis.
+- **Test additional regression models** (e.g., XGBoost, LightGBM) for comparison.
+- **Investigate regional disparities** in energy certification policies for better model accuracy.
